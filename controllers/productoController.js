@@ -6,7 +6,7 @@ const productoController = {
         const {nombre, imagen, descripcion, precio} = req.body
 
         try{
-            let producto = await new Producto(nombre, imagen, descripcion, precio ,...req.body).save()
+            let producto = await new Producto(req.body).save()
             res.status(201).json({
                 message: 'Producto creado',
                 response: producto._id,
