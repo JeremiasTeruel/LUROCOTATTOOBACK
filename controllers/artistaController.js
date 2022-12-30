@@ -18,6 +18,10 @@ const artistaController = {
                     success: false
                 })
             }
+
+            // const artists = await Artista.find()
+            // return res.status(200).json(artists)
+
         } catch(error){
             console.log(error)
             res.status(400).json({
