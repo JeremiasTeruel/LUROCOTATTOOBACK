@@ -18,7 +18,7 @@ adminPassport.use(
                         usuario = {
                             usuarioId: usuario._id,
                             nombre: usuario.nombre,
-                            mail: usuario.mail,
+                            email: usuario.email,
                             foto: usuario.foto,
                             role: usuario.role,
                         }

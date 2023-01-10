@@ -19,7 +19,7 @@ const validator = joi.object({
     .max(15)
     .required(),
 
-    mail:
+    email:
     joi.alternatives()
     .try(
         joi.string()
@@ -32,7 +32,7 @@ const validator = joi.object({
             }),
         )
     .required()
-    .error(new Error("Invalid email")),
+    .error(new Error("Email no valido")),
 
     contraseña:
     joi.string()
@@ -40,9 +40,6 @@ const validator = joi.object({
     .min(5)
     .max(32)
     .required(),
-
-    repetirContraseña:
-    joi.ref('contraseña'),
 
     foto:
     joi.string()
@@ -70,20 +67,19 @@ const usuarioController = {
             let {
                 nombre,
                 apellido,
-                mail,
+                email,
                 contraseña,
-                repetirContraseña,
                 foto,
                 from
             } = resultado
-            let usuario = await Usuario.findOne({mail})
+            let usuario = await Usuario.findOne({email})
             if(!usuario){
                 let logged = false;
                 let verified = false;
                 let code = crypto.randomBytes(15).toString('hex')
                 if( from === 'formulario'){
                     contraseña = bcryptjs.hashSync(contraseña, 10)
-                    usuario = await new Usuario({ nombre, apellido, mail, contraseña: [contraseña], foto, role: "usuario", from: [from], logged, verified, code }).save()
+                    usuario = await new Usuario({ nombre, apellido, email, contraseña: [contraseña], foto, role: "usuario", from: [from], logged, verified, code }).save()
                     //sendMail(mail, code)
                     res.status(201).json({
                         message: 'Usuario registrado con exito',
@@ -92,7 +88,7 @@ const usuarioController = {
                 } else {
                     contraseña = bcryptjs.hashSync(contraseña, 10);
                     verified = true;
-                    usuario = await new Usuario({ nombre, apellido, mail, contraseña: [contraseña], foto, role: "usuario", from: [from], logged, verified, code }).save()
+                    usuario = await new Usuario({ nombre, apellido, email, contraseña: [contraseña], foto, role: "usuario", from: [from], logged, verified, code }).save()
                     res.status(201).json({
                         message: 'Usuario registrado con exito desde ' + from,
                         success: true
@@ -125,10 +121,10 @@ const usuarioController = {
     },
 
     iniciarSesion: async (req, res) => {
-        const {mail, contraseña, from} = req.body
+        const {email, contraseña, from} = req.body
 
         try{
-            let usuario = await Usuario.findOne({mail})
+            let usuario = await Usuario.findOne({email})
             if(!usuario){
                 res.status(404).json({
                     message: 'Usuario no encontrado, por favor registrate',
@@ -142,7 +138,7 @@ const usuarioController = {
                         id: usuario._id,
                         nombre: usuario.nombre,
                         apellido: usuario.apellido,
-                        mail: usuario.mail,
+                        email: usuario.email,
                         role: usuario.role,
                         foto: usuario.foto
                     }
@@ -167,7 +163,7 @@ const usuarioController = {
                         id: usuario._id,
                         nombre: usuario.nombre,
                         apellido: usuario.apellido,
-                        mail: usuario.mail,
+                        email: usuario.email,
                         role: usuario.role,
                         foto: usuario.foto
                     }
@@ -202,10 +198,10 @@ const usuarioController = {
     },
 
     cerrarSesion: async (req, res) => {
-        const {mail} = req.body
+        const {email} = req.body
 
         try{
-            let usuario = await Usuario.findOne({mail:mail})
+            let usuario = await Usuario.findOne({email:email})
             if(usuario){
                 usuario.logged = false
                 await usuario.save()
@@ -284,12 +280,12 @@ const usuarioController = {
     },
 
     editarUsuario: async (req, res) => {
-        const {mail} = req.body
-        const {mail: uMail, role: uRole} = req.usuario
+        const {email} = req.body
+        const {email: uMail, role: uRole} = req.usuario
 
         try{
-            if(uMail.toString() === mail || uRole === "administrador"){
-                let putUsuario = await Usuario.findOne({ mail: mail })
+            if(uMail.toString() === email || uRole === "administrador"){
+                let putUsuario = await Usuario.findOne({ email: email })
                 if(putUsuario){
                     let {
                         nombre,
@@ -298,14 +294,14 @@ const usuarioController = {
                         foto
                     } = req.body;
                 if(uRole !== "administrador"){
-                    putUsuario = await Usuario.findOneAndUpdate({mail:mail}, {nombre, apellido, foto}, {new: true})
+                    putUsuario = await Usuario.findOneAndUpdate({email:email}, {nombre, apellido, foto}, {new: true})
                     res.status(200).json({
                         message: 'Usuario editado con exito',
                         response: putUsuario,
                         success: true
                     })
                 } else if(uRole === "administrador"){
-                    putUsuario = await Usuario.findOneAndUpdate({mail:mail}, {nombre, apellido, foto, role}, {new: true})
+                    putUsuario = await Usuario.findOneAndUpdate({email:email}, {nombre, apellido, foto, role}, {new: true})
                     res.status(200).json({
                         message: 'Usuario editado con exito',
                         response: putUsuario,
@@ -364,7 +360,7 @@ const usuarioController = {
                     id: req.usuario.usuarioId,
                     nombre: req.usuario.nombre,
                     apellido: req.usuario.apellido,
-                    mail: req.usuario.mail,
+                    email: req.usuario.email,
                     foto: req.usuario.foto,
                     role: req.usuario.role
                 }},
