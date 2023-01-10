@@ -4,14 +4,14 @@ const mongoose = require("mongoose")
 const usuarioSchema = new mongoose.Schema({
     nombre: {type: String, required: true, min: 3, max: 15},
     apellido: {type: String, required: true, min: 3, max: 15},
-    mail: {
+    email: {
         type: String,
         min: [4, 'El minimo de caracteres es 4'], 
         max: [32, 'El maximo de caracteres es 32'],
         unique: true,
         lowercase: true,
         required: true, 
-        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/]
+        // match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/]
         },
     contraseña: [{
         type: String,
@@ -19,11 +19,6 @@ const usuarioSchema = new mongoose.Schema({
         max: [32, 'La contraseña es muy larga'],
         required: true
     }],
-    repetirContraseña: [{type: String, required: false, validate: function () {
-        if(repetirContraseña !== contraseña){
-            throw new Error('Las contraseñas no coinciden, revisa e intenta nuevamente.')
-        }
-    }}],
     foto: {type: String, required: true},
     from: [{type: String, required: true}],
     role: {type: String, required: true},
