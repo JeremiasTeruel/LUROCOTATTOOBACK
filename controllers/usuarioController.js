@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const bcryptjs = require('bcryptjs')
 const joi = require('joi');
 const jwt = require('jsonwebtoken')
+const verificarEmail = require('./verificarEmail')
 
 const validator = joi.object({
     nombre:         
@@ -80,7 +81,7 @@ const usuarioController = {
                 if( from === 'formulario'){
                     contraseña = bcryptjs.hashSync(contraseña, 10)
                     usuario = await new Usuario({ nombre, apellido, email, contraseña: [contraseña], foto, role: "usuario", from: [from], logged, verified, code }).save()
-                    //sendMail(mail, code)
+                    verificarEmail(email, code)
                     res.status(201).json({
                         message: 'Usuario registrado con exito',
                         success: true
