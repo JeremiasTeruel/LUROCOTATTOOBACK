@@ -82,12 +82,17 @@ const tatuajeController = {
 
 
     tatuajeArtista: async (req, res) => {
+        let query = {}
+
+        if (req.query.artista){
+            query.artista = req.query.artista
+        }
         try{
-            let tatuajes = await Tatuaje.findById({ artista: req.artista.artistaId })
+            let tatuajes = await Tatuaje.findOne({ query})
             .populate("artista", { nombre:1, apellido:1 })
             if(tatuajes) {
                 res.status(200).json({
-                    message: 'Tatuajes de sus artistas encontrados',
+                    message: 'Tatuajes encontrados',
                     response: tatuajes,
                     success: true
                 })
@@ -99,6 +104,32 @@ const tatuajeController = {
             }
         } catch(error){
             console.log(error)
+            res.status(400).json({
+                message: 'Error, busqueda sin exito',
+                success: false
+            })
+        }
+    },
+
+    unTatuaje: async (req, res) => {
+        const { id } = req.params
+
+        try{
+            let tatuaje = await Tatuaje.findOne({ _id:id })
+            if(tatuaje){
+                res.status(200).json({
+                    message: 'Tatuaje encontrado',
+                    response: tatuaje,
+                    success: true
+                })
+            } else {
+                res.status(404).json({
+                    message: 'Tatuaje no encontrado',
+                    success: true
+                })
+            }
+        } catch(error){
+            console.log(error);
             res.status(400).json({
                 message: 'Error, busqueda sin exito',
                 success: false
