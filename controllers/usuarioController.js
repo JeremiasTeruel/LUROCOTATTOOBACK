@@ -3,7 +3,7 @@ const crypto = require('crypto')
 const bcryptjs = require('bcryptjs')
 const joi = require('joi');
 const jwt = require('jsonwebtoken')
-const verificarEmail = require('./verificarEmail')
+const enviarEmail = require('./enviarEmail')
 
 const validator = joi.object({
     nombre:         
@@ -81,7 +81,7 @@ const usuarioController = {
                 if( from === 'formulario'){
                     contraseña = bcryptjs.hashSync(contraseña, 10)
                     usuario = await new Usuario({ nombre, apellido, email, contraseña: [contraseña], foto, role: "usuario", from: [from], logged, verified, code }).save()
-                    verificarEmail(email, code)
+                    enviarEmail(email, code)
                     res.status(201).json({
                         message: 'Usuario registrado con exito',
                         success: true
@@ -168,7 +168,7 @@ const usuarioController = {
                         role: usuario.role,
                         foto: usuario.foto
                     }
-                    const token = jwt.sign({id: user._id}, process.env.KEY_JWT, {expiresIn: 60*60*24});
+                    const token = jwt.sign({id: usuario._id}, process.env.KEY_JWT, {expiresIn: 60*60*24});
                     usuario.logged = true;
                     await usuario.save()
                     res.status(200).json({
@@ -371,6 +371,31 @@ const usuarioController = {
         } else {
             res.json({
                 message: 'Por favor, inicia sesion',
+                success: false
+            })
+        }
+    },
+
+
+    verificarMail: async (req, res) => {
+        const { code } = req.params
+
+        try{
+            let usuario = await Usuario.findOne({ code })
+            if(usuario){
+                usuario.verified = true
+                await usuario.save()
+                res.status(200).redirect(301, 'http://localhost:3000')
+            } else {
+                res.status(404).json({
+                    message: 'Este email no pertenece a una cuenta registrada',
+                    success: false
+                })
+            }
+        } catch(error){
+            console.log(error)
+            res.status(400).json({
+                message: 'Error, no se pudo verificar la cuenta',
                 success: false
             })
         }
