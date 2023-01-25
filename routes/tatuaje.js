@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
 
-const { nuevoTatuaje, eliminarTatuaje, todosTatuajes, tatuajeArtista } = require('../controllers/tatuajeController')
+const { nuevoTatuaje, eliminarTatuaje, todosTatuajes, tatuajeArtista, unTatuaje } = require('../controllers/tatuajeController')
 
 router.post('/', nuevoTatuaje)
 router.get('/', todosTatuajes)
 router.delete('/:id',eliminarTatuaje)
-router.get('/:id', tatuajeArtista)
+router.get('/:id', unTatuaje)
+router.get('/artista/:id', tatuajeArtista)
 
 module.exports = router
