@@ -7,6 +7,6 @@ router.post('/', nuevoTatuaje)
 router.get('/', todosTatuajes)
 router.delete('/:id',eliminarTatuaje)
 router.get('/:id', unTatuaje)
-router.get('/artista/:id', tatuajeArtista)
+router.get('/artista', tatuajeArtista)
 
 module.exports = router
