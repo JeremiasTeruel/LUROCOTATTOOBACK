@@ -22,6 +22,8 @@ const productoController = {
     },
 
     unProducto: async(req, res) =>{
+
+
         const {id} = req.params
         try{
             let producto = await Producto.findOne({_id:id})
@@ -47,14 +49,22 @@ const productoController = {
     },
 
     productos: async(req, res) => {
-        const query = {}
-        let productos
+        const query = req.query.producto
+
+
         if(req.query.producto){
             let regExp = new RegExp(`^${req.query.producto}`, "i")
             query.producto = regExp
         }
         try{
-            productos = await Producto.find(query)
+            let productos
+
+            if (!query){
+                productos = await Producto.find()
+            }else {
+                productos = await Producto.find({nombre: new RegExp(query, "i")})
+            }
+
             if(productos){
                 res.status(200).json({
                     message: 'Estos son todos los productos',
