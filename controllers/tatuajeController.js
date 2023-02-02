@@ -51,7 +51,7 @@ const tatuajeController = {
 
     tatuajeArtista: async (req, res) => {
 
-        console.log(req.query)
+        console.log(req.query, "lasjdflakasdfasdfsjdflk")
 
         let query = {}
 
