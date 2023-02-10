@@ -1,0 +1,74 @@
+const Carro = require('../models/Carro')
+
+const carroController = {
+
+    agregarAlCarro: async (req, res) => {
+
+        try {
+            const {userEmail, productos} = req.body
+
+            const userCart = await Carro.findOne({
+                userEmail: userEmail
+            })
+
+            console.log(userCart, "alksdjflkasd")
+
+            if (!userCart) {
+                const carro = await Carro.create({
+                    userEmail,
+                    productos
+                })
+                return res.status(201).json({
+                    message: "Carrito creado con exito!",
+                    response: carro
+                })
+            }
+
+            const carro = await Carro.findOneAndReplace({
+                userEmail: userEmail
+            }).replaceOne({
+                userEmail: userEmail,
+                productos: productos
+            })
+
+            return res.status(200).json({
+                message: "Carrito actualizado",
+                response: {
+                    userEmail: userEmail,
+                    productos: productos
+                }
+            })
+
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    limpiarCarro: async (req, res) => {
+
+        try {
+            const {userEmail} = req.query
+
+            if (!userEmail) throw new Error("No se puede encontrar el carrito sin el email del usuario")
+
+            await Carro.findOneAndDelete({
+                userEmail: userEmail
+            })
+
+            return res.json({
+                message: `El carrito del usuario ${userEmail} ha sido eliminado`,
+                response: userEmail
+            })
+
+
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message
+            })
+
+        }
+    }
+
+
+}
+
+module.exports = carroController
