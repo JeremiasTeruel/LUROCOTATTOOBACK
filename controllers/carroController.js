@@ -2,16 +2,41 @@ const Carro = require('../models/Carro')
 
 const carroController = {
 
-    agregarAlCarro: async (req, res) => {
+    getCarro: async (req, res) => {
+
+        const {userEmail} = req.query
 
         try {
-            const {userEmail, productos} = req.body
 
             const userCart = await Carro.findOne({
                 userEmail: userEmail
             })
 
-            console.log(userCart, "alksdjflkasd")
+            if (!userCart) throw new Error()
+
+            return res.status(200).json({
+                response: userCart
+            })
+
+        }catch (err){
+            return res.status(400).json({
+                message: "Carro vacio o inexistente",
+                response: []
+            })
+        }
+
+    },
+
+    agregarAlCarro: async (req, res) => {
+
+
+        try {
+            const {userEmail, productos} = req.body
+
+
+            const userCart = await Carro.findOne({
+                userEmail: userEmail
+            })
 
             if (!userCart) {
                 const carro = await Carro.create({
