@@ -28,7 +28,7 @@ const carroController = {
     },
 
     agregarAlCarro: async (req, res) => {
-
+        console.log(req.body)
 
         try {
             const {userEmail, productos} = req.body
