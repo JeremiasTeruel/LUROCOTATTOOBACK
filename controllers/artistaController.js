@@ -120,21 +120,28 @@ const artistaController = {
 
     eliminarArtista: async(req, res) => {
         const {id} = req.params
-        // const {role} = req.usuario
+        const {role} = req.usuario
         
         try{
-            // if(role === "admin"){
-            // } else {
-            //     res.status(401).json({
-            //         message: "No autorizado",
-            //         success: true
-            //     })
-            // }
-            await Artista.findOneAndDelete({_id:id})
-            res.status(200).json({
-                message: "Artista eliminado con exito",
-                success: true
-            })
+            if(role === "administrador"){
+                let artista = await Artista.findOneAndDelete({_id:id})
+                if(artista){
+                    res.status(200).json({
+                        message: "Artista eliminado con exito",
+                        success: true
+                    })
+                } else {
+                    res.status(404).json({
+                        message: "Arista no encontrado.",
+                        response: false
+                    })
+                }
+            } else {
+                res.status(401).json({
+                    message: "No autorizado",
+                    success: true
+                })
+            }
         } catch(error){
             console.log(error)
             res.status(400).json({
@@ -143,8 +150,6 @@ const artistaController = {
             })
         }
     }
-
-
 }
 
 module.exports = artistaController

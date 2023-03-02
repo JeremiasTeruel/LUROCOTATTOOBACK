@@ -332,23 +332,26 @@ const usuarioController = {
 
     eliminarUsuario: async (req, res) => {
         const { id } = req.params
-        if(req.usuario !== null){
-            try{
-                await Usuario.findOneAndDelete({_id:id})
-                res.status(200).json({
-                    message: 'Usuario eliminado con exito',
-                    success: true
-                })
-            } catch(error){
-                console.log(error)
-                res.status(400).json({
-                    message: 'Se produjo un error',
-                    success: false
-                })
+        const { role } = req.usuario
+        try{
+            if(req.usuario !== null || role === "administrador"){
+                let usuario = await Usuario.findOneAndDelete({_id:id})
+                if (usuario){
+                    res.status(200).json({
+                        message: 'Usuario eliminado con exito',
+                        success: true
+                    })
+                } else {
+                    res.status(401).json({
+                        message: 'No autorizado',
+                        success: false
+                    })
+                }
             }
-        } else {
-            res.status(401).json({
-                message: 'No autorizado',
+        } catch(error){
+            console.log(error)
+            res.status(400).json({
+                message: 'Se produjo un error',
                 success: false
             })
         }

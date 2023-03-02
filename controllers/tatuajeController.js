@@ -28,10 +28,9 @@ const tatuajeController = {
 
         try {
             let tatuaje = await Tatuaje.findOneAndDelete({_id: id})
-            if (tatuaje.usuario === id || role === "administrador") {
+            if (role === "administrador") {
                 res.status(200).json({
                     message: 'Tatuaje eliminado',
-                    response: tatuaje._id,
                     success: true
                 })
             } else {

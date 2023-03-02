@@ -88,17 +88,25 @@ const productoController = {
 
     eliminarProducto: async(req, res) => {
         const {id} = req.params
+        const {role} = req.usuario
         try{
-            let producto = await Producto.findOneAndDelete({_id:id})
-            if(producto){
-                res.status(200).json({
-                    message: 'Producto eliminado',
-                    success: true
-                })
+            if(role === "administrador"){
+                let producto = await Producto.findOneAndDelete({_id:id})
+                if(producto){
+                    res.status(200).json({
+                        message: 'Producto eliminado',
+                        success: true
+                    })
+                } else {
+                    res.status(404).json({
+                        message: 'No se encontro el producto',
+                        success: false
+                    })
+                }
             } else {
-                res.status(404).json({
-                    message: 'No se encontro el producto',
-                    success: false
+                res.status(401).json({
+                    message: "No autorizado.",
+                    response: false
                 })
             }
         } catch(error){
